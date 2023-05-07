@@ -85,7 +85,11 @@ def chat():
     payload  = jsonify({ "answer": {"answer":reposnse_text,"instructions":{}}, "matchedContext": "", "conversationPayload": {"platformSessionId":resource_uuid}})
     response = make_response(payload)
     response.status_code = 200
-    return response
+    return """"{​​​​​​
+    "answer": "{​​​​​​\"answer\":\"Saudi Business Machines Ltd. (SBM) is the General Marketing and Services Representative of IBM World Trade Corporation in Saudi Arabia – the Kingdom’s leading provider of end-to-end enterprise information technology and telecommunications solutions. \",\"instructions\":{​​​​​​}​​​​​​}​​​​​​",
+    "matchedContext": "",
+    "conversationPayload": "{​​​​​​\"platformSessionId\":\"f2ee16c2-32fa-4ac5-b80c-7dd42bcea9e1\"}​​​​​​"
+}​​​​​​"""
 
 if __name__ == '__main__':
     #WA_init()
