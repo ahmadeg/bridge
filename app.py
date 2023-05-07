@@ -74,13 +74,10 @@ def chat():
     reposnse_text = reposnse['output']['generic'][0]['text']
     if reposnse_text =="Dont Understand":
         reposnse = GPT_Snd_message(message)
-    else:
-        reposnse = jsonify({
-            "response": reposnse_text, 'source':'Watson'})
-
+        reposnse_text = response.choices[0].text
+    reposnse = jsonify({ "answer": reposnse_text, "matchedContext": "", "conversationPayload": "{}" })
     return reposnse
 
 if __name__ == '__main__':
     #WA_init()
     app.run(host='0.0.0.0', port=5000,debug=True)
-
