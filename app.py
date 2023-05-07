@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,make_response
 import openai
 from ibm_watson import AssistantV2,AssistantV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 import requests
 import json
+import logging
+import uuid
 model = "text-davinci-002"
 max_tokens = 70
 temperature = 0.7
@@ -36,7 +38,6 @@ def WA_Send_message(message_):
     # #########################
     # # Message
     # #########################
-    print(message_)
     message = WA_Assistant.message(
         WA_Draft_Environment_ID,
         WA_Session_ID,
@@ -65,19 +66,28 @@ def GPT_Snd_message(message):
     return jsonify({
         "response": response.choices[0].text,'source':'GPT'})
 app = Flask(__name__)
+# Configure logging
+#logging.basicConfig(filename='requests.log', level=logging.INFO)
+
 @app.route('/chat', methods=['POST'])
 def chat():
+    # Log the incoming request payload
+    #logging.info('Incoming payload: %s', request.data)
+    resource_uuid = str(uuid.uuid4())
     data = request.get_json()
     #message =  data['prompt']
     message = data['fm-question']
-    reposnse  = WA_Send_message(message)
-    reposnse_text = reposnse['output']['generic'][0]['text']
+    response  = WA_Send_message(message)
+    reposnse_text = response['output']['generic'][0]['text']
     if reposnse_text =="Dont Understand":
-        reposnse = GPT_Snd_message(message)
+        response = GPT_Snd_message(message)
         reposnse_text = response.choices[0].text
-    reposnse = jsonify({ "answer": reposnse_text, "matchedContext": "", "conversationPayload": "{}" })
-    return reposnse
+    payload  = jsonify({ "answer": {"answer":reposnse_text,"instructions":{}}, "matchedContext": "", "conversationPayload": {"platformSessionId":resource_uuid}})
+    response = make_response(payload)
+    response.status_code = 200
+    return response
 
 if __name__ == '__main__':
     #WA_init()
     app.run(host='0.0.0.0', port=5000,debug=True)
+
