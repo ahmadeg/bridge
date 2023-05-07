@@ -67,12 +67,12 @@ def GPT_Snd_message(message):
         "response": response.choices[0].text,'source':'GPT'})
 app = Flask(__name__)
 # Configure logging
-logging.basicConfig(filename='requests.log', level=logging.INFO)
+#logging.basicConfig(filename='requests.log', level=logging.INFO)
 
 @app.route('/chat', methods=['POST'])
 def chat():
     # Log the incoming request payload
-    logging.info('Incoming payload: %s', request.data)
+    #logging.info('Incoming payload: %s', request.data)
     resource_uuid = str(uuid.uuid4())
     data = request.get_json()
     #message =  data['prompt']
