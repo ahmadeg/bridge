@@ -67,12 +67,12 @@ def GPT_Snd_message(message):
         "response": response.choices[0].text,'source':'GPT'})
 app = Flask(__name__)
 # Configure logging
-#logging.basicConfig(filename='requests.log', level=logging.INFO)
+logging.basicConfig(filename='requests.log', level=logging.INFO)
 
 @app.route('/chat', methods=['POST'])
 def chat():
     # Log the incoming request payload
-    #logging.info('Incoming payload: %s', request.data)
+    logging.info('Incoming payload: %s', request.data)
     resource_uuid = str(uuid.uuid4())
     data = request.get_json()
     #message =  data['prompt']
@@ -85,13 +85,9 @@ def chat():
     payload  = jsonify({ "answer": {"answer":reposnse_text,"instructions":{}}, "matchedContext": "", "conversationPayload": {"platformSessionId":resource_uuid}})
     response = make_response(payload)
     response.status_code = 200
-    return """"{​​​​​​
-    "answer": "{​​​​​​\"answer\":\"Saudi Business Machines Ltd. (SBM) is the General Marketing and Services Representative of IBM World Trade Corporation in Saudi Arabia – the Kingdom’s leading provider of end-to-end enterprise information technology and telecommunications solutions. \",\"instructions\":{​​​​​​}​​​​​​}​​​​​​",
-    "matchedContext": "",
-    "conversationPayload": "{​​​​​​\"platformSessionId\":\"f2ee16c2-32fa-4ac5-b80c-7dd42bcea9e1\"}​​​​​​"
-}​​​​​​"""
+    return response
 
 if __name__ == '__main__':
     #WA_init()
-    app.run(host='0.0.0.0', port=5000,debug=True)
+    app.run(host='0.0.0.0', port=5000)
 
