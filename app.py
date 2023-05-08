@@ -66,7 +66,7 @@ def GPT_Snd_message(message):
     return jsonify({
         "response": response.choices[0].text,'source':'GPT'})
 
-def generate_json(self, data):
+def generate_json(data):
     return json.dumps(data, separators=(',', ':'), ensure_ascii=False)
 app = Flask(__name__)
 # Configure logging
