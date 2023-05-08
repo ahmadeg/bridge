@@ -65,9 +65,50 @@ def GPT_Snd_message(message):
 
     return jsonify({
         "response": response.choices[0].text,'source':'GPT'})
+
+def generate_json(self, data):
+    return json.dumps(data, separators=(',', ':'), ensure_ascii=False)
 app = Flask(__name__)
 # Configure logging
 #logging.basicConfig(filename='requests.log', level=logging.INFO)
+############################################
+
+
+@app.route('/chat_uneeq', methods=['POST'])
+def chat_uneeq():
+    # Log the incoming request payload
+    #logging.info('Incoming payload: %s', request.data)
+    resource_uuid = str(uuid.uuid4())
+    data = request.get_json()
+    #message =  data['prompt']
+    message = data['fm-question'] if 'fm-question' in data else None
+    fmAvatar = data["fm-avatar"] if "dfm-avatar" in data else None
+    session_id = fmAvatar["avatarSessionId"] if "avatarSessionId" in data else None
+    sid = data["sid"] if "sid" in data else None
+    response  = WA_Send_message(message)
+    reposnse_text = response['output']['generic'][0]['text']
+    if reposnse_text =="Dont Understand":
+        response = GPT_Snd_message(message)
+        reposnse_text = response.choices[0].text
+    answer_body = {
+        "answer": reposnse_text,
+        "instructions": {}
+    }
+
+    body = {
+        "answer": generate_json(answer_body),
+        "matchedContext": '',
+        "conversationPayload": ''
+    }
+    #payload  = jsonify({ "answer": {"answer":reposnse_text,"instructions":{}}, "matchedContext": "", "conversationPayload": {"platformSessionId":resource_uuid}})
+    response = make_response(body)
+    response.status_code = 200
+    return response
+
+
+
+
+
 
 @app.route('/chat', methods=['POST'])
 def chat():
